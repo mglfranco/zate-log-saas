@@ -328,5 +328,5 @@ with tab_admin:
                 else:
                     st.info("Nenhuma cotação salva.")
             except Exception as e:
-                st.error(f"Erro ao ler quotes: {str(e)}")
+                st.error(f"Erro ao ler quotes: {str(e)} | Supabase URL: '{st.secrets.get('SUPABASE_URL', '')}'")
             st.markdown("</div>", unsafe_allow_html=True)
