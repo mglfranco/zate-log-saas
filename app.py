@@ -168,6 +168,16 @@ with tab_calc:
                 "Clientes_Paradas": st.column_config.NumberColumn("Qtd de Clientes/Paradas", min_value=1, step=1, required=True)
             }
         )
+        
+        # Sincroniza estado para manter as edições e adições
+        st.session_state.destinations_df = edited_df
+        
+        c_add = st.columns([1, 2])
+        if c_add[0].button("➕ Adicionar Cidade"):
+            new_row = pd.DataFrame([{"Cidade": "Nova Cidade - SC", "Clientes_Paradas": 1}])
+            st.session_state.destinations_df = pd.concat([st.session_state.destinations_df, new_row], ignore_index=True)
+            st.rerun()
+
         st.markdown("</div>", unsafe_allow_html=True)
 
     with col_right:
