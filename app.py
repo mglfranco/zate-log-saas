@@ -266,7 +266,8 @@ with tab_calc:
                             "icms": float(icms_tax),
                             "total_suggested": float(total_final)
                         }).execute()
-                    except: pass
+                    except Exception as e:
+                        st.error(f"⚠️ Erro ao salvar cotação no Supabase: {str(e)}")
                 
                 # RESULT SHOWCASE
                 st.success("CÁLCULO E ROTEIRIZAÇÃO CONCLUÍDOS COM SUCESSO!", icon="✅")
@@ -326,6 +327,6 @@ with tab_admin:
                     st.dataframe(dfq, use_container_width=True)
                 else:
                     st.info("Nenhuma cotação salva.")
-            except:
-                st.error("Erro ao ler quotes.")
+            except Exception as e:
+                st.error(f"Erro ao ler quotes: {str(e)}")
             st.markdown("</div>", unsafe_allow_html=True)
