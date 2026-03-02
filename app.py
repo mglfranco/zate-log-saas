@@ -22,10 +22,10 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-    /* Premium Dark/Yellow Theme Injection */
+    /* Premium Light/Yellow Theme Injection */
     .stApp {
-        background-color: #121212;
-        color: #FFFFFF;
+        background-color: #FFFFFF;
+        color: #121212;
     }
     .stButton>button {
         width: 100%;
@@ -41,25 +41,25 @@ st.markdown("""
     .stButton>button:hover {
         background-color: #EAB308;
         color: #000;
-        border: 1px solid #FFF;
+        border: 1px solid #121212;
         transform: scale(1.02);
     }
     .metric-value {
-        color: #FACC15;
+        color: #121212;
         font-size: 32px;
         font-weight: 900;
-        text-shadow: 0px 2px 4px rgba(0,0,0,0.5);
+        text-shadow: 0px 1px 2px rgba(0,0,0,0.1);
     }
     h1, h2, h3 {
-        color: #FACC15 !important;
+        color: #121212 !important;
     }
     .card {
-        background-color: #1E1E1E;
+        background-color: #F8FAFC;
         padding: 24px;
         border-radius: 12px;
-        border: 1px solid #333;
+        border: 1px solid #E2E8F0;
         margin-bottom: 24px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     }
     .premium-divider {
         height: 2px;
@@ -125,11 +125,15 @@ def get_osrm_route(coords):
 # HEADER
 c1, c2, c3 = st.columns([1, 2, 1])
 with c2:
-    if os.path.exists("logo.png"):
-        st.image("logo.png", use_container_width=True)
-    else:
-        st.markdown("<h1 style='text-align: center;'>ZATE LOG</h1>", unsafe_allow_html=True)
-    st.markdown("<h4 style='text-align: center; color: #AAA;'>Simulador Avançado de Fretes Fracionados</h4>", unsafe_allow_html=True)
+    st.markdown("""
+        <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 5px;">
+            <div style="background-color: #FACC15; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+                <span style="color: #000000; font-size: 28px; font-weight: 900; font-family: sans-serif;">Z</span>
+            </div>
+            <h1 style="margin: 0; padding: 0; font-size: 38px; color: #121212 !important; font-weight: 900;">Zate Transportes</h1>
+        </div>
+    """, unsafe_allow_html=True)
+    st.markdown("<h4 style='text-align: center; color: #666;'>Simulador Avançado de Fretes Fracionados</h4>", unsafe_allow_html=True)
 
 st.markdown("<div class='premium-divider'></div>", unsafe_allow_html=True)
 

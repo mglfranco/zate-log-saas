@@ -1,7 +1,7 @@
 [theme]
-# Zate Log Premium Theme (Yellow / Dark)
+# Zate Log Premium Theme (Yellow / Light)
 primaryColor = "#FACC15"
-backgroundColor = "#121212"
-secondaryBackgroundColor = "#1E1E1E"
-textColor = "#FFFFFF"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F3F4F6"
+textColor = "#121212"
 font = "sans serif"
