@@ -1,0 +1,193 @@
+@import './styles/utilities.css';
+
+:root {
+    /* Premium Brewery Color Palette - Light Mode */
+    --color-primary: #FACC15;
+    /* Yellow 400 - Z logo border */
+    --color-primary-hover: #EAB308;
+    /* Yellow 500 */
+    --color-secondary: #0F172A;
+    /* Slate 900 - Black/Dark Gray */
+    --color-accent: #22C55E;
+    /* Green 500 - Deals/Check */
+
+    --color-background: #f8fafc;
+    /* Slate 50 */
+    --color-surface: #ffffff;
+    --color-surface-hover: #f1f5f9;
+
+    --color-text-primary: #0f172a;
+    /* Slate 900 */
+    --color-text-secondary: #475569;
+    /* Slate 600 */
+    --color-text-muted: #94a3b8;
+    /* Slate 400 */
+
+    --color-border: #e2e8f0;
+    /* Slate 200 */
+    --color-border-hover: #cbd5e1;
+
+    /* Status Colors */
+    --color-success: #16A34A;
+    /* Emerald 600 */
+    --color-warning: #FACC15;
+    /* Amber 600 */
+    --color-error: #DC2626;
+    /* Red 600 */
+    --color-info: #0284C7;
+    /* Blue 600 */
+
+    /* Frosted Glassmorphism */
+    --glass-bg: rgba(255, 255, 255, 0.9);
+    --glass-border: rgba(255, 255, 255, 0.8);
+    --glass-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    --glass-backdrop: blur(16px);
+
+    /* Radii */
+    --radius-sm: 0.375rem;
+    --radius-md: 0.75rem;
+    --radius-lg: 1.25rem;
+    --radius-xl: 2rem;
+    --radius-full: 9999px;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+    /* Transitions */
+    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-normal: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Typography */
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+}
+
+[data-theme='dark'] {
+    --color-background: #0f172a;
+    /* Obsidian / Slate 900 */
+    --color-surface: #1e293b;
+    /* Slate 800 */
+    --color-surface-hover: #334155;
+
+    --color-text-primary: #f8fafc;
+    /* Slate 50 */
+    --color-text-secondary: #cbd5e1;
+    /* Slate 300 */
+    --color-text-muted: #64748b;
+    /* Slate 500 */
+
+    --color-border: #334155;
+    /* Slate 700 */
+    --color-border-hover: #475569;
+
+    --glass-bg: rgba(30, 41, 59, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.05);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* Reset & Base Styles */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-sans);
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color var(--transition-normal), color var(--transition-normal);
+
+    /* Subtle Zate Log Pattern (Lines/Roads) */
+    background-image: repeating-linear-gradient(45deg, rgba(15, 23, 42, 0.02) 0px, rgba(15, 23, 42, 0.02) 2px, transparent 2px, transparent 10px),
+        radial-gradient(circle at 100% 0%, rgba(250, 204, 21, 0.1), transparent 30%);
+    background-attachment: fixed;
+    min-height: 100vh;
+}
+
+/* Typography Enhancements */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.025em;
+    color: var(--color-text-primary);
+}
+
+h1 {
+    font-size: 2.5rem;
+}
+
+@media (min-width: 768px) {
+    h1 {
+        font-size: 3rem;
+    }
+}
+
+p {
+    color: var(--color-text-secondary);
+}
+
+a {
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+a:hover {
+    color: var(--color-primary-hover);
+}
+
+/* Utilities */
+.glass-panel {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-backdrop);
+    -webkit-backdrop-filter: var(--glass-backdrop);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    border-radius: var(--radius-lg);
+}
+
+.premium-gradient-text {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-text-muted);
+}
