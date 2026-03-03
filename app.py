@@ -79,7 +79,10 @@ st.markdown("""
 @st.cache_resource
 def init_connection():
     if "SUPABASE_URL" in st.secrets and "SUPABASE_KEY" in st.secrets:
-        return create_client(st.secrets["SUPABASE_URL"], st.secrets["SUPABASE_KEY"])
+        # Prevent DNS Error if user accidentally pasted URL with extra quotes in st.secrets
+        clean_url = st.secrets["SUPABASE_URL"].strip().strip('"').strip("'")
+        clean_key = st.secrets["SUPABASE_KEY"].strip().strip('"').strip("'")
+        return create_client(clean_url, clean_key)
     return None
 
 supabase = init_connection()
