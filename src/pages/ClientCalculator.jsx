@@ -183,7 +183,7 @@ export default function CalculatorPage() {
             ? noQuoteText
             : `Olá Zate! Tenho uma carga saindo de Joinville para *${destString}*. Carga: ${formData.quantity} ${cargoName}, total de ${formData.weight}kg. Refrigeração: ${formData.needsRefrigeration ? 'Sim' : 'Não'}.${offerText}`;
 
-        window.open(`https://wa.me/5511999999999?text=${encodeURIComponent(text)}`, '_blank');
+        window.open(`https://wa.me/5545984180671?text=${encodeURIComponent(text)}`, '_blank');
     };
 
     return (

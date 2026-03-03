@@ -266,7 +266,7 @@ with tab_calc:
 
     # BOTÃO CENTRAL DE CÁLCULO
     st.markdown("<br>", unsafe_allow_html=True)
-    if st.button("CALCULAR INVESTIMENTO LOGÍSTICO 🚀"):
+    if st.button("CALCULAR FRETE 🚀"):
         if edited_df.empty or edited_df["Cidade"].str.strip().eq("").all():
             st.error("🚨 Insira ao menos um destino válido.")
         else:
@@ -389,7 +389,7 @@ with tab_calc:
                 zap_msg += f"\nVamos fechar?"
                 
                 msg_encoded = quote(zap_msg)
-                WHATSAPP_NUMBER = "5547999999999" # <- O USUÁRIO PODE MUDAR ESSE NÚMERO AQUI
+                WHATSAPP_NUMBER = "5545984180671" # <- O USUÁRIO PODE MUDAR ESSE NÚMERO AQUI
                 zap_link = f"https://wa.me/{WHATSAPP_NUMBER}?text={msg_encoded}"
                 
                 st.markdown(f"""
