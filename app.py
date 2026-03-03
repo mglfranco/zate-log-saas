@@ -404,6 +404,39 @@ if is_admin:
         st.warning("🚨 Supabase não configurado ou credenciais inválidas em `.streamlit/secrets.toml`")
     else:
         st.write("Visualização de Banco de Dados de Produção")
+        
+        # --- B.I. DASHBOARD ---
+        st.markdown("<h3 style='margin-top: 20px; color: #121212;'>📊 Painel de Inteligência Comercial</h3>", unsafe_allow_html=True)
+        try:
+            rq_all = supabase.table("zate_quotes").select("created_at, origin, total_suggested, distance_km").execute()
+            if rq_all.data:
+                df_all = pd.DataFrame(rq_all.data)
+                df_all['total_suggested'] = pd.to_numeric(df_all['total_suggested'], errors='coerce').fillna(0)
+                
+                total_cotado = df_all['total_suggested'].sum()
+                total_leads = len(df_all)
+                ticket_medio = total_cotado / total_leads if total_leads > 0 else 0
+                
+                m1, m2, m3 = st.columns(3)
+                m1.metric(label="💰 Volume Total Cotado", value=f"R$ {total_cotado:,.2f}")
+                m2.metric(label="👥 Total de Leads (Cotações)", value=f"{total_leads}")
+                m3.metric(label="📈 Ticket Médio", value=f"R$ {ticket_medio:,.2f}")
+                
+                st.markdown("<br>", unsafe_allow_html=True)
+                
+                # Ranking de Cidades Origem (Mapa de Calor Simples)
+                st.write("**Top Cidades de Origem Cotadas**")
+                city_counts = df_all['origin'].value_counts().reset_index()
+                city_counts.columns = ['Cidade Origem', 'Qtd de Cotações']
+                st.bar_chart(city_counts.set_index('Cidade Origem'))
+            else:
+                st.info("Aguardando novas cotações para gerar inteligência de dados.")
+        except Exception as e:
+            st.error(f"Erro no módulo de B.I.: {e}")
+            
+        st.markdown("<div class='premium-divider'></div>", unsafe_allow_html=True)
+        
+        # --- INFRAESTRUTURA ADMIN ---
         dash_c1, dash_c2 = st.columns([1, 2])
         
         with dash_c1:
