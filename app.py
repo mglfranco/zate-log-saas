@@ -122,7 +122,56 @@ def get_osrm_route(coords):
     return None
 
 # ==========================================
-# 4. INTERFACE PRINCIPAL
+# 4. SISTEMA DE AUTENTICAÇÃO (LOGIN)
+# ==========================================
+if "user" not in st.session_state:
+    st.session_state.user = None
+
+def login_form():
+    st.markdown("<h2 style='text-align: center; color: #121212;'>Zate Log | Portal</h2>", unsafe_allow_html=True)
+    with st.form("login_form"):
+        email = st.text_input("E-mail corporativo")
+        password = st.text_input("Senha", type="password")
+        col1, col2 = st.columns(2)
+        with col1:
+            submit_login = st.form_submit_button("Entrar", use_container_width=True)
+        with col2:
+            submit_register = st.form_submit_button("Criar Conta", use_container_width=True)
+        
+        if submit_register and supabase:
+            try:
+                auth_resp = supabase.auth.sign_up({"email": email, "password": password})
+                st.success("Conta criada! Verifique seu E-mail ou tente Entrar se não houver confirmação ativada.")
+            except Exception as e:
+                st.error(f"Erro no Registro: {e}")
+                
+        if submit_login and supabase:
+            try:
+                auth_resp = supabase.auth.sign_in_with_password({"email": email, "password": password})
+                st.session_state.user = auth_resp.user
+                st.rerun()
+            except Exception as e:
+                st.error("Credenciais inválidas ou erro de conexão falhou.")
+
+# Se não estiver logado, bloqueia a tela inteira renderizando apenas o Login
+if not st.session_state.user:
+    st.markdown("<br><br>", unsafe_allow_html=True)
+    c_empty1, c_auth, c_empty2 = st.columns([1, 2, 1])
+    with c_auth:
+        st.markdown("<div class='card'>", unsafe_allow_html=True)
+        login_form()
+        st.markdown("</div>", unsafe_allow_html=True)
+    st.stop()  # Impede que o resto do app.py seja lido!
+
+# Botão de Logout para usuário logado
+st.sidebar.write(f"👤 Logado como: **{st.session_state.user.email}**")
+if st.sidebar.button("🚪 Sair do Sistema"):
+    st.session_state.user = None
+    if supabase: supabase.auth.sign_out()
+    st.rerun()
+
+# ==========================================
+# 5. INTERFACE PRINCIPAL
 # ==========================================
 
 # HEADER
@@ -140,7 +189,14 @@ with c2:
 
 st.markdown("<div class='premium-divider'></div>", unsafe_allow_html=True)
 
-tab_calc, tab_admin = st.tabs(["🛣️ Cotação de Carga", "🔒 Painel Administrativo"])
+# Admin Authorization
+ADMIN_EMAIL = "mglfranco15@gmail.com" # Exemplo de email do dono. Pode ser alterado depois.
+is_admin = st.session_state.user and st.session_state.user.email == ADMIN_EMAIL
+
+if is_admin:
+    tab_calc, tab_admin = st.tabs(["🛣️ Cotação de Carga", "🔒 Painel Administrativo"])
+else:
+    tab_calc, = st.tabs(["🛣️ Cotação de Carga"])
 
 with tab_calc:
     col_left, col_right = st.columns([1.2, 1])
@@ -193,7 +249,7 @@ with tab_calc:
             cargo_weight = st.number_input("Peso Bruto (kg)", min_value=1.0, value=5146.16, format="%.2f")
         with c_req2:
             invoice_value = st.number_input("Valor da NF (R$)", min_value=0.0, value=30051.32, format="%.2f")
-            cargo_type = st.selectbox("Tipo de Material", ["Carga Mista (Fracionado)", "Seca Comum", "Refrigerada"])
+            cargo_type = st.selectbox("Tipo de Material", ["Carga Mista (Fracionado)", "Comum", "Refrigerada"])
             
         st.write("Adicionais Restritivos:")
         r1, r2, r3 = st.columns(3)
@@ -341,8 +397,9 @@ with tab_calc:
                 </a>
                 """, unsafe_allow_html=True)
                 
-with tab_admin:
-    st.header("🏢 Zate Log Backoffice")
+if is_admin:
+    with tab_admin:
+        st.header("🏢 Zate Log Backoffice")
     if not supabase:
         st.warning("🚨 Supabase não configurado ou credenciais inválidas em `.streamlit/secrets.toml`")
     else:
