@@ -140,14 +140,14 @@ def login_form():
         
         if submit_register and supabase:
             try:
-                auth_resp = supabase.auth.sign_up({"email": email, "password": password})
+                auth_resp = supabase.auth.sign_up({"email": email.strip(), "password": password})
                 st.success("Conta criada! Verifique seu E-mail ou tente Entrar se não houver confirmação ativada.")
             except Exception as e:
                 st.error(f"Erro no Registro: {e}")
                 
         if submit_login and supabase:
             try:
-                auth_resp = supabase.auth.sign_in_with_password({"email": email, "password": password})
+                auth_resp = supabase.auth.sign_in_with_password({"email": email.strip(), "password": password})
                 st.session_state.user = auth_resp.user
                 st.rerun()
             except Exception as e:
