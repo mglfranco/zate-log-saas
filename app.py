@@ -138,16 +138,22 @@ def login_form():
         with col2:
             submit_register = st.form_submit_button("Criar Conta", use_container_width=True)
         
+        import re
+
         if submit_register and supabase:
             try:
-                auth_resp = supabase.auth.sign_up({"email": email.strip(), "password": password})
+                # Sanitização Avançada: Regex limpa qualquer caractere escondido (ex: \u200b)
+                safe_email = re.sub(r'[^a-zA-Z0-9_\-\.\@]', '', email).lower()
+                auth_resp = supabase.auth.sign_up({"email": safe_email, "password": password})
                 st.success("Conta criada! Verifique seu E-mail ou tente Entrar se não houver confirmação ativada.")
             except Exception as e:
                 st.error(f"Erro no Registro: {e}")
                 
         if submit_login and supabase:
             try:
-                auth_resp = supabase.auth.sign_in_with_password({"email": email.strip(), "password": password})
+                # Sanitização Avançada 
+                safe_email = re.sub(r'[^a-zA-Z0-9_\-\.\@]', '', email).lower()
+                auth_resp = supabase.auth.sign_in_with_password({"email": safe_email, "password": password})
                 st.session_state.user = auth_resp.user
                 st.rerun()
             except Exception as e:
