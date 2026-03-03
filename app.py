@@ -353,8 +353,12 @@ with tab_admin:
             n_cost = st.number_input("Cobrança por KM Rodado (R$)", value=float(curr.get("cost_per_km", 4.5)), step=0.1)
             n_drop = st.number_input("Taxa de Parada Extra (R$)", value=float(curr.get("drop_fee", 100.0)), step=10.0)
             if st.button("Atualizar SaaS Engine"):
-                supabase.table("zate_settings").update({"cost_per_km": n_cost, "drop_fee": n_drop}).eq("id", 1).execute()
-                st.success("Tabela de fretes Globais Atualizada!")
+                try:
+                    supabase.table("zate_settings").update({"cost_per_km": n_cost, "drop_fee": n_drop}).eq("id", 1).execute()
+                    st.success("Tabela de fretes Globais Atualizada!")
+                except Exception as e:
+                    st.error(f"🚨 Falha de Conexão com o Banco de Dados. O sistema não pode salvar a alteração. Detalhes: {e}")
+                    st.warning("👉 DICA: Isso ocorre porque a URL do Supabase (SUPABASE_URL) configurada nos 'Secrets' do Streamlit Cloud está incorreta ou o servidor está offline. Atualize os Secrets.")
             st.markdown("</div>", unsafe_allow_html=True)
             
         with dash_c2:
