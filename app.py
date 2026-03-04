@@ -205,64 +205,56 @@ else:
     tab_calc, = st.tabs(["🛣️ Cotação de Carga"])
 
 with tab_calc:
-    col_left, col_right = st.columns([1.2, 1])
+    # Tabela editável para múltiplos destinos organizados e dados da carga
+    st.markdown("<div class='card'>", unsafe_allow_html=True)
+    st.subheader("📍 Roteiros e Cargas")
     
-    with col_left:
-        st.markdown("<div class='card'>", unsafe_allow_html=True)
-        st.subheader("📍 Roteirização Inteligente")
+    col_orig, col_type = st.columns([2, 1])
+    with col_orig:
         origin = st.text_input("Cidade de Origem", value="Joinville - SC")
+    with col_type:
+        cargo_type = st.selectbox("Tipo de Material", ["Carga Mista (Fracionado)", "Comum", "Refrigerada"])
+    
+    st.write("Adicione os clientes, cidades e os dados das respectivas notas fiscais abaixo:")
+    
+    if 'destinations_df' not in st.session_state:
+        # Colunas: Cliente/Bairro, Cidade / UF, Qtd Pallets, Peso Bruto (kg), Valor NF (R$)
+        st.session_state.destinations_df = pd.DataFrame([
+            {"Cliente": "Supermercado X - Centro", "Cidade": "Jaguaruna - SC", "Pallets": 2, "Peso": 1500.0, "NF": 12500.0},
+            {"Cliente": "Distribuidora Y", "Cidade": "Turvo - SC", "Pallets": 1, "Peso": 850.5, "NF": 5300.20}
+        ])
         
-        st.write("Cidades de Destino & Número de Entregas (Clientes)")
-        # Tabela editável para múltiplos destinos organizados
-        if 'destinations_df' not in st.session_state:
-            st.session_state.destinations_df = pd.DataFrame([
-                {"Cidade": "Jaguaruna - SC", "Clientes_Paradas": 5},
-                {"Cidade": "Rio Fortuna - SC", "Clientes_Paradas": 1},
-                {"Cidade": "Ararangua - SC", "Clientes_Paradas": 2},
-                {"Cidade": "Balneario Rincao - SC", "Clientes_Paradas": 2},
-                {"Cidade": "Turvo - SC", "Clientes_Paradas": 1},
-                {"Cidade": "Biguaçu - SC", "Clientes_Paradas": 2}
-            ])
-            
-        edited_df = st.data_editor(
-            st.session_state.destinations_df,
-            num_rows="dynamic",
-            use_container_width=True,
-            column_config={
-                "Cidade": st.column_config.TextColumn("Nome da Cidade / UF", required=True),
-                "Clientes_Paradas": st.column_config.NumberColumn("Qtd de Clientes/Paradas", min_value=1, step=1, required=True)
-            }
-        )
-        
-        # Sincroniza estado para manter as edições e adições
-        st.session_state.destinations_df = edited_df
-        
-        c_add = st.columns([1, 2])
-        if c_add[0].button("➕ Adicionar Cidade"):
-            new_row = pd.DataFrame([{"Cidade": "Nova Cidade - SC", "Clientes_Paradas": 1}])
-            st.session_state.destinations_df = pd.concat([st.session_state.destinations_df, new_row], ignore_index=True)
-            st.rerun()
+    edited_df = st.data_editor(
+        st.session_state.destinations_df,
+        num_rows="dynamic",
+        use_container_width=True,
+        column_config={
+            "Cliente": st.column_config.TextColumn("Cliente e Bairro", required=True),
+            "Cidade": st.column_config.TextColumn("Cidade / UF", required=True),
+            "Pallets": st.column_config.NumberColumn("Qtd Pallets", min_value=1, step=1, required=True, format="%d"),
+            "Peso": st.column_config.NumberColumn("Peso Bruto (kg)", min_value=0.1, step=10.0, required=True, format="%.2f"),
+            "NF": st.column_config.NumberColumn("Valor NF (R$)", min_value=0.0, step=100.0, required=True, format="R$ %.2f")
+        }
+    )
+    
+    # Sincroniza estado para manter as edições e adições
+    st.session_state.destinations_df = edited_df
+    
+    c_add = st.columns([1, 2])
+    if c_add[0].button("➕ Adicionar Linha / Cliente"):
+        new_row = pd.DataFrame([{"Cliente": "Novo Cliente", "Cidade": "Nova Cidade - SC", "Pallets": 1, "Peso": 1000.0, "NF": 5000.0}])
+        st.session_state.destinations_df = pd.concat([st.session_state.destinations_df, new_row], ignore_index=True)
+        st.rerun()
 
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    with col_right:
-        st.markdown("<div class='card'>", unsafe_allow_html=True)
-        st.subheader("📦 Dados da Carga")
-        
-        c_req1, c_req2 = st.columns(2)
-        with c_req1:
-            cargo_qty = st.number_input("Volumes Totais", min_value=1, value=247)
-            cargo_weight = st.number_input("Peso Bruto (kg)", min_value=1.0, value=5146.16, format="%.2f")
-        with c_req2:
-            invoice_value = st.number_input("Valor da NF (R$)", min_value=0.0, value=30051.32, format="%.2f")
-            cargo_type = st.selectbox("Tipo de Material", ["Carga Mista (Fracionado)", "Comum", "Refrigerada"])
-            
-        st.write("Adicionais Restritivos:")
-        r1, r2, r3 = st.columns(3)
-        with r1: needs_cold = st.checkbox("Refrigeração", value=("Refrigerada" in cargo_type))
-        with r2: collect_empties = st.checkbox("Logística Reversa")
-        with r3: vuc_rest = st.checkbox("Restrição VUC")
-        st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
+    
+    st.markdown("<div class='card'>", unsafe_allow_html=True)
+    st.write("Adicionais Restritivos:")
+    r1, r2, r3 = st.columns(3)
+    with r1: needs_cold = st.checkbox("Refrigeração", value=("Refrigerada" in cargo_type))
+    with r2: collect_empties = st.checkbox("Logística Reversa")
+    with r3: vuc_rest = st.checkbox("Restrição VUC")
+    st.markdown("</div>", unsafe_allow_html=True)
 
     # BOTÃO CENTRAL DE CÁLCULO
     st.markdown("<br>", unsafe_allow_html=True)
@@ -274,9 +266,17 @@ with tab_calc:
                 # 1. Obter cidades válidas do grid (remover vazias e resetar erro)
                 valid_dests = edited_df[edited_df["Cidade"].str.strip() != ""]
                 cities_list = valid_dests["Cidade"].tolist()
-                stops_list = valid_dests["Clientes_Paradas"].tolist()
                 
-                total_clients = sum(stops_list)
+                # Opcional: Lista de Clientes para uso no WhatsApp
+                clients_list = valid_dests["Cliente"].tolist()
+                
+                # Cada linha na nova tabela representa 1 Cliente/Parada
+                total_clients = len(valid_dests)
+                
+                # Agregação Matemática dos inputs dinâmicos
+                cargo_qty = valid_dests["Pallets"].sum()
+                cargo_weight = valid_dests["Peso"].sum()
+                invoice_value = valid_dests["NF"].sum()
                 
                 # Geocode Route
                 route_cities = [origin] + cities_list
@@ -331,7 +331,7 @@ with tab_calc:
                     try:
                         supabase.table("zate_quotes").insert({
                             "origin": origin,
-                            "destinations": {"cities": cities_list, "stops": stops_list},
+                            "destinations": {"cities": cities_list, "clients": clients_list},
                             "total_volumes": int(cargo_qty),
                             "total_weight": float(cargo_weight),
                             "invoice_value": float(invoice_value),
@@ -392,16 +392,9 @@ with tab_calc:
                 WHATSAPP_NUMBER = "5545984180671" # <- O USUÁRIO PODE MUDAR ESSE NÚMERO AQUI
                 zap_link = f"https://wa.me/{WHATSAPP_NUMBER}?text={msg_encoded}"
                 
-                st.markdown(f"""
-                <a href="{zap_link}" target="_blank" style="text-decoration: none;">
-                    <button style="width: 100%; border-radius: 8px; font-weight: 800; background-color: #25D366; color: #FFFFFF; border: none; padding: 14px; font-size: 18px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; gap: 10px;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
-                          <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
-                        </svg>
-                        NEGOCIAR PELO WHATSAPP
-                    </button>
-                </a>
-                """, unsafe_allow_html=True)
+                col_btn = st.columns([1, 2, 1])
+                with col_btn[1]:
+                    st.link_button("📱 NEGOCIAR PELO WHATSAPP", zap_link, type="primary", use_container_width=True)
                 
 if is_admin:
     with tab_admin:
